@@ -190,3 +190,250 @@
     The IAM role controls what the application can do, encryption protects the stored documents, and lifecycle rules automatically manage older files.
 
     In summary: The main S3 best practices are to encrypt data, restrict access, prevent unnecessary public exposure, monitor activity, and use lifecycle rules to manage storage and costs efficiently.
+
+7. **Storage Solution for Large E-Commerce Website Assets:**
+
+    Recommend a storage solution to address the performance impact of storing large assets for an e-commerce website running on your infrastructure. Consider factors such as scalability, performance, cost, and ease of management in your recommendation.
+
+    **Storage Solution for a Large E-Commerce Website**
+
+    For a large e-commerce website, I would recommend using Amazon S3 for storing large assets, combined with Amazon CloudFront for fast delivery to customers.
+
+    ![alt text](<Images/s3 architecture.jpg>)
+
+    ![alt text](<Images/s3 architecture 2.jpg>)
+
+    **Recommended Architecture**
+
+        Customers
+            |
+            v
+        CloudFront (CDN)
+            |
+            v
+        Amazon S3
+            |
+            +-- Product Images
+            +-- Videos
+            +-- Product Documents
+            +-- Static Website Assets
+
+    **Why I Would Choose S3 + CloudFront**
+
+    - **Scalability**: S3 can store very large amounts of data without requiring me to add physical storage. As the number of products and assets increases, the storage can grow with the website.
+
+    - **Performance**: Instead of customers downloading large images and videos directly from the main application server, CloudFront caches and delivers the assets from edge locations closer to customers. This reduces the workload on the application infrastructure and can improve page-loading performance.
+
+    - **Cost**: S3 uses usage-based pricing, so I don't need to purchase dedicated storage hardware. S3 also provides different storage classes that can help reduce the cost of storing assets that are accessed less frequently.
+
+    - **Ease of Management**: S3 is a managed service, so there is no physical storage hardware to maintain. I can organize assets using buckets and prefixes and use lifecycle rules to automatically move or delete older files.
+
+    - **Security**: S3 supports encryption and access controls. I would keep the bucket private where possible and allow CloudFront to retrieve the required assets rather than making the entire bucket publicly accessible.
+
+    **Example**
+
+    For an online store, product images could be stored in S3:
+
+        S3 Bucket
+          ├── products/
+          │    ├── phones/
+          │    ├── laptops/
+          │    └── clothing/
+          └── videos/
+
+    When a customer views a product, CloudFront delivers the image from a nearby edge location, rather than forcing the request to travel to the application's main server every time.
+
+    **Conclusion**
+
+    I would use Amazon S3 + CloudFront because it provides a combination of scalability, high performance, cost management, and simple administration. It also separates large static assets from the application servers, allowing the servers to focus on processing customer requests, orders, and other dynamic operations.
+
+8. **Security Strategy for Object Storage:**
+
+    Develop a comprehensive security strategy for storing 30 internal videos in object storage, addressing encryption, access controls, and monitoring measures to protect the videos from unauthorized access and ensure data security.
+
+    **Security Strategy for Object Storage**
+
+    For storing 30 internal videos in Amazon S3, I would use a security strategy based on encryption, strict access controls, and continuous monitoring. Since the videos are for internal use, I would keep the storage private and only allow authorized employees or applications to access them.
+
+    - **Data Encryption**
+
+      - Enable S3 server-side encryption for all videos.
+
+      - For stronger control, use AWS KMS to manage encryption keys.
+
+      - Require HTTPS/TLS for data transferred between users, applications, and S3.
+
+      - Avoid storing or transmitting unencrypted copies of sensitive videos.
+
+    - **Access Control**
+
+      - Keep the S3 bucket private and enable S3 Block Public Access.
+
+      - Use IAM roles instead of sharing AWS access keys between employees.
+
+      - Apply the principle of least privilege, giving each user only the permissions they require.
+
+      - Separate permissions for viewing, uploading, modifying, and deleting videos.
+
+      - Use multi-factor authentication (MFA) for privileged accounts.
+
+      - If videos need to be shared temporarily, use short-lived pre-signed URLs rather than making the bucket public.
+
+    - **Monitoring and Auditing**
+
+      - I would monitor the bucket to detect unauthorized or unusual activity.
+
+      - Use AWS CloudTrail to record API activity involving the S3 bucket.
+
+      - Use Amazon CloudWatch for monitoring and alerts where appropriate.
+
+      - Enable appropriate S3 access logging or monitoring capabilities.
+
+      - Create alerts for suspicious activities, such as unexpected downloads or changes to bucket permissions.
+
+      - Regularly review IAM permissions and access logs.
+
+    - **Data Protection and Recovery**
+
+      - Enable S3 Versioning to help recover videos that are accidentally deleted or overwritten.
+
+      - Consider S3 Object Lock if certain videos must not be deleted or modified for a defined period.
+
+      - Maintain backups or replication where the videos are business-critical.
+
+      - Use Lifecycle Rules to archive or delete videos according to the organization's retention policy.
+
+    **Example Architecture**
+
+                Authorized Employees
+                         |
+                    MFA / IAM
+                         |
+                         v
+                  Private S3 Bucket
+                  /              \
+                 /                \
+          Encryption            Access Control
+           (KMS)              (Least Privilege)
+                 \                /
+                  \              /
+                   v            v
+                    CloudTrail
+                         |
+                         v
+                  Monitoring & Alerts
+
+    **Security Checklist**
+
+    |Security Measure|Purpose|
+    |---------------|--------|
+    |S3 Block Public Access|Prevents accidental public exposure|
+    |Encryption + KMS|Protects videos if storage data is accessed improperly|
+    |IAM roles/policies|Controls who can access the videos|
+    |MFA|Provides additional account protection|
+    |HTTPS/TLS|Protects videos during transfer|
+    |CloudTrail|Records access and API activity|
+    |Monitoring/alerts|Helps detect suspicious activity|
+    |Versioning|Helps recover deleted or overwritten videos|
+    |Lifecycle policies |Manages retention and storage costs|
+
+    **In summary: I would keep the 30 videos in a private, encrypted S3 bucket, restrict access using IAM and least-privilege permissions, require MFA and HTTPS, and continuously monitor activity using CloudTrail and AWS monitoring tools. This provides multiple layers of protection rather than relying on a single security measure.**
+
+9. **Disaster Recovery Planning:**
+
+    Develop a disaster recovery plan for a cloud-based application, outlining strategies for data backup, redundancy, failover, and recovery procedures in the event of a catastrophic failure or natural disaster.
+
+    **Disaster Recovery Plan for a Cloud-Based Application**
+
+    A disaster recovery (DR) plan is a set of procedures for restoring an application and its data after a major failure, cyberattack, hardware problem, or natural disaster. For a cloud-based application, I would design the plan around backup, redundancy, failover, and regular testing.
+
+    - **Data Backup**
+
+      - Schedule automatic backups of databases and important application data.
+
+      - Store backups separately from the main production environment.
+
+      - Use encryption to protect backup data.
+
+      - Keep multiple backup versions so that data can be restored to an earlier point.
+
+      - Define a retention period, such as keeping daily backups for 30 days and longer-term monthly backups.
+
+    - **Redundancy**
+
+      - To avoid depending on a single server or location:
+
+      - Run application servers across multiple Availability Zones.
+
+      - Use a managed database with replication or Multi-AZ deployment where appropriate.
+
+      - Store important files in durable cloud object storage such as Amazon S3.
+
+      - For critical applications, maintain a recovery environment in a separate geographic region.
+
+    - **Failover**
+
+        A load balancer can automatically distribute traffic between healthy application servers.
+
+                    Users
+                      |
+                      v
+               Load Balancer
+                 /       \
+                v         v
+             Server 1   Server 2
+                |         |
+                +----+----+
+                     |
+                  Database
+                     |
+              Automated Backup
+                     |
+                  S3 Backup
+
+        If Server 1 fails, the load balancer can stop sending traffic to it and continue directing users to Server 2.
+
+        For a major regional disaster, DNS or another traffic-management mechanism can redirect users to the recovery environment in another region.
+
+    - **Recovery Procedures**: If a disaster occurs, I would follow these steps:
+
+      - Detect the failure using monitoring and alerts.
+
+      - Assess the situation and determine whether failover is required.
+
+      - Activate the DR plan and notify the responsible IT team.
+
+      - Fail over to healthy servers or the secondary environment.
+
+      - Restore data from the most recent valid backup if required.
+
+      - Test the application to confirm that services and data are working correctly.
+
+      - Redirect normal traffic to the recovered environment.
+
+      - Investigate the failure and document what happened.
+
+      - Improve the DR plan based on lessons learned.
+
+    - **RTO and RPO**: Two important targets should be established:
+
+      - RTO (Recovery Time Objective): How quickly the application must be restored. For example, an RTO of 1 hour means the organization aims to restore the service within one hour.
+
+      - RPO (Recovery Point Objective): How much data loss is acceptable. For example, an RPO of 15 minutes means the organization aims to recover data from no more than 15 minutes before the incident.
+
+    - **Regular Testing**
+
+        The DR plan should not simply be written and forgotten. I would perform regular recovery tests to verify that backups can actually be restored and that failover procedures work as expected.
+
+    **Summary**
+
+    |Strategy|Purpose|
+    |--------|-------|
+    |Backups|Protect data and allow restoration|
+    |Redundancy|Prevent a single component from causing an outage|
+    |Failover|Automatically or manually switch to healthy resources|
+    |Multi-region recovery|Protect against major regional disasters|
+    |RTO/RPO|Define recovery speed and acceptable data loss|
+    |Testing|Confirm that the DR plan actually works|
+
+    ***In conclusion, an effective cloud disaster recovery plan should combine automated backups, redundant infrastructure, failover mechanisms, clear recovery procedures, defined RTO/RPO targets, and regular testing. This helps minimize downtime and data loss when a catastrophic event occurs.***
