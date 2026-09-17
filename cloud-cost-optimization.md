@@ -129,7 +129,7 @@
     |Cost|Lower than On-Demand when you commit for a longer period|Can be much cheaper than On-Demand|
     |Availability|More predictable because capacity is reserved/committed through the pricing arrangement|Not guaranteed; AWS can interrupt the instance|
     |Commitment|Usually requires a 1- or 3-year commitment|No long-term commitment|
-    |Best for|Stable, predictable workloads|Flexible workloads that can tolerate interruptions
+    |Best for|Stable, predictable workloads|Flexible workloads that can tolerate interruptions|
     |Example|Production web server that runs continuously|Batch processing or large data analysis jobs|
 
     **Reserved Instances**: Reserved Instances are suitable when I know an application will need computing capacity continuously for a long period.
